@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+/*
+  Design tokens. Semantic names rather than raw colours so the correct/incorrect
+  states stay consistent everywhere -- an exam app that renders "richtig" in a
+  slightly different green on two screens teaches the learner to distrust it.
+*/
+@theme {
+  --color-surface: #ffffff;
+  --color-surface-muted: #f6f7f9;
+  --color-surface-sunken: #eef0f4;
+  --color-border: #dfe3ea;
+  --color-ink: #16181d;
+  --color-ink-muted: #5b6472;
+
+  --color-brand: #1d4ed8;
+  --color-brand-soft: #eff4ff;
+
+  --color-correct: #0f7b3d;
+  --color-correct-soft: #e8f6ee;
+  --color-wrong: #b3261e;
+  --color-wrong-soft: #fdecea;
+  --color-warn: #9a5b00;
+  --color-warn-soft: #fff5e3;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-arabic: "Noto Naskh Arabic", "Geeza Pro", "Segoe UI", Tahoma, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-surface: #14161a;
+    --color-surface-muted: #1b1e24;
+    --color-surface-sunken: #23272f;
+    --color-border: #2f3540;
+    --color-ink: #f2f4f7;
+    --color-ink-muted: #a3adbb;
+
+    --color-brand: #7ea6ff;
+    --color-brand-soft: #1a2439;
+
+    --color-correct: #5cd08a;
+    --color-correct-soft: #16281e;
+    --color-wrong: #ff8f85;
+    --color-wrong-soft: #2c1a19;
+    --color-warn: #f0b45e;
+    --color-warn-soft: #2b2113;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  margin: 0;
+  /* The answer options are large tap targets; keep them from being zoomed. */
+  touch-action: manipulation;
+}
+
+/*
+  Arabic explanation blocks. Set as a utility rather than inline so every
+  explanation gets the same direction, font and line height.
+*/
+.arabic {
+  direction: rtl;
+  text-align: right;
+  font-family: var(--font-arabic);
+  line-height: 1.9;
+}
+
+/* Respect users who have asked for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}

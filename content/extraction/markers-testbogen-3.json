@@ -1,0 +1,336 @@
+{
+  "testbogen": 3,
+  "source": "1638810215616_Unbenannt.pdf",
+  "pages": [
+    {
+      "file": "1638810215616_Unbenannt.pdf",
+      "page": 5,
+      "band": [
+        2419,
+        2559
+      ],
+      "groups": [
+        {
+          "rows": [
+            116.1,
+            232.9,
+            148.1
+          ],
+          "marked_index": 1,
+          "margin": 0.364,
+          "confident": true
+        },
+        {
+          "rows": [
+            138.1,
+            75.4,
+            230.9
+          ],
+          "marked_index": 2,
+          "margin": 0.402,
+          "confident": true
+        },
+        {
+          "rows": [
+            227.7,
+            83.8,
+            119.0
+          ],
+          "marked_index": 0,
+          "margin": 0.477,
+          "confident": true
+        },
+        {
+          "rows": [
+            87.8,
+            201.1,
+            96.1
+          ],
+          "marked_index": 1,
+          "margin": 0.522,
+          "confident": true
+        },
+        {
+          "rows": [
+            112.7,
+            200.5,
+            115.2
+          ],
+          "marked_index": 1,
+          "margin": 0.426,
+          "confident": true
+        },
+        {
+          "rows": [
+            194.9,
+            91.1,
+            120.9
+          ],
+          "marked_index": 0,
+          "margin": 0.38,
+          "confident": true
+        }
+      ]
+    },
+    {
+      "file": "1638810215616_Unbenannt.pdf",
+      "page": 4,
+      "band": [
+        2448,
+        2587
+      ],
+      "groups": [
+        {
+          "rows": [
+            118.8,
+            249.7
+          ],
+          "marked_index": 1,
+          "margin": 0.524,
+          "confident": true
+        },
+        {
+          "rows": [
+            249.3,
+            128.2,
+            150.6
+          ],
+          "marked_index": 0,
+          "margin": 0.396,
+          "confident": true
+        },
+        {
+          "rows": [
+            142.1,
+            62.8,
+            226.5,
+            227.6
+          ],
+          "marked_index": 3,
+          "margin": 0.005,
+          "confident": false
+        },
+        {
+          "rows": [
+            228.7,
+            50.9,
+            102.3
+          ],
+          "marked_index": 0,
+          "margin": 0.553,
+          "confident": true
+        },
+        {
+          "rows": [
+            215.4,
+            47.2,
+            53.5
+          ],
+          "marked_index": 0,
+          "margin": 0.752,
+          "confident": true
+        },
+        {
+          "rows": [
+            104.5,
+            194.1,
+            107.3
+          ],
+          "marked_index": 1,
+          "margin": 0.447,
+          "confident": true
+        },
+        {
+          "rows": [
+            98.6,
+            193.5,
+            94.2
+          ],
+          "marked_index": 1,
+          "margin": 0.49,
+          "confident": true
+        }
+      ]
+    },
+    {
+      "file": "1638810215616_Unbenannt.pdf",
+      "page": 3,
+      "band": [
+        2425,
+        2592
+      ],
+      "groups": [
+        {
+          "rows": [
+            202.3
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            236.5
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            252.7
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            221.9,
+            222.8
+          ],
+          "marked_index": 1,
+          "margin": 0.004,
+          "confident": false
+        },
+        {
+          "rows": [
+            195.1
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            211.5
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            210.5
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        }
+      ]
+    },
+    {
+      "file": "1638810215616_Unbenannt.pdf",
+      "page": 2,
+      "band": [
+        2184,
+        2322
+      ],
+      "groups": [
+        {
+          "rows": [
+            252.7,
+            162.5
+          ],
+          "marked_index": 0,
+          "margin": 0.357,
+          "confident": true
+        },
+        {
+          "rows": [
+            133.6,
+            242.5,
+            141.3
+          ],
+          "marked_index": 1,
+          "margin": 0.417,
+          "confident": true
+        },
+        {
+          "rows": [
+            133.5
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            214.7
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            196.7
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            178.1
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            166.2,
+            178.3
+          ],
+          "marked_index": 1,
+          "margin": 0.068,
+          "confident": false
+        },
+        {
+          "rows": [
+            152.4,
+            163.6
+          ],
+          "marked_index": 1,
+          "margin": 0.068,
+          "confident": false
+        }
+      ]
+    },
+    {
+      "file": "1638810215616_Unbenannt.pdf",
+      "page": 1,
+      "band": [
+        2447,
+        2610
+      ],
+      "groups": [
+        {
+          "rows": [
+            246.3
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            232.3
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            214.3
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,309 @@
+{
+  "testbogen": 1,
+  "source": "Unbenannt3.pdf",
+  "pages": [
+    {
+      "file": "Unbenannt3.pdf",
+      "page": 5,
+      "band": [
+        2387,
+        2531
+      ],
+      "groups": [
+        {
+          "rows": [
+            249.3
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        },
+        {
+          "rows": [
+            249.4
+          ],
+          "marked_index": 0,
+          "margin": 1.0,
+          "confident": false
+        }
+      ]
+    },
+    {
+      "file": "Unbenannt3.pdf",
+      "page": 4,
+      "band": [
+        2257,
+        2397
+      ],
+      "groups": [
+        {
+          "rows": [
+            152.3,
+            243.2,
+            116.8
+          ],
+          "marked_index": 1,
+          "margin": 0.374,
+          "confident": true
+        },
+        {
+          "rows": [
+            154.0,
+            239.1,
+            157.8
+          ],
+          "marked_index": 1,
+          "margin": 0.34,
+          "confident": true
+        },
+        {
+          "rows": [
+            239.9,
+            110.3,
+            135.3
+          ],
+          "marked_index": 0,
+          "margin": 0.436,
+          "confident": true
+        },
+        {
+          "rows": [
+            139.3,
+            72.5,
+            210.0
+          ],
+          "marked_index": 2,
+          "margin": 0.337,
+          "confident": true
+        },
+        {
+          "rows": [
+            71.9,
+            189.0,
+            31.2,
+            72.2
+          ],
+          "marked_index": 1,
+          "margin": 0.618,
+          "confident": true
+        },
+        {
+          "rows": [
+            187.7,
+            184.8,
+            44.0,
+            58.0,
+            58.9,
+            83.6
+          ],
+          "marked_index": 0,
+          "margin": 0.015,
+          "confident": false
+        },
+        {
+          "rows": [
+            81.9,
+            193.7,
+            80.0
+          ],
+          "marked_index": 1,
+          "margin": 0.577,
+          "confident": true
+        }
+      ]
+    },
+    {
+      "file": "Unbenannt3.pdf",
+      "page": 3,
+      "band": [
+        2272,
+        2430
+      ],
+      "groups": [
+        {
+          "rows": [
+            140.8,
+            123.0,
+            144.2
+          ],
+          "marked_index": 2,
+          "margin": 0.023,
+          "confident": false
+        },
+        {
+          "rows": [
+            132.1,
+            122.1,
+            234.2
+          ],
+          "marked_index": 2,
+          "margin": 0.436,
+          "confident": true
+        },
+        {
+          "rows": [
+            135.5,
+            133.4,
+            216.9
+          ],
+          "marked_index": 2,
+          "margin": 0.375,
+          "confident": true
+        },
+        {
+          "rows": [
+            192.1,
+            70.2,
+            70.6
+          ],
+          "marked_index": 0,
+          "margin": 0.632,
+          "confident": true
+        },
+        {
+          "rows": [
+            182.0,
+            41.8,
+            47.7
+          ],
+          "marked_index": 0,
+          "margin": 0.738,
+          "confident": true
+        },
+        {
+          "rows": [
+            64.9,
+            176.9,
+            94.2
+          ],
+          "marked_index": 1,
+          "margin": 0.467,
+          "confident": true
+        },
+        {
+          "rows": [
+            71.5,
+            165.9,
+            68.2
+          ],
+          "marked_index": 1,
+          "margin": 0.569,
+          "confident": true
+        }
+      ]
+    },
+    {
+      "file": "Unbenannt3.pdf",
+      "page": 2,
+      "band": [
+        2316,
+        2460
+      ],
+      "groups": [
+        {
+          "rows": [
+            168.0,
+            144.5,
+            240.2
+          ],
+          "marked_index": 2,
+          "margin": 0.301,
+          "confident": true
+        },
+        {
+          "rows": [
+            243.2,
+            130.8,
+            143.6
+          ],
+          "marked_index": 0,
+          "margin": 0.41,
+          "confident": true
+        },
+        {
+          "rows": [
+            134.0,
+            94.5,
+            203.3
+          ],
+          "marked_index": 2,
+          "margin": 0.341,
+          "confident": true
+        },
+        {
+          "rows": [
+            90.0,
+            196.3,
+            212.4,
+            73.4
+          ],
+          "marked_index": 2,
+          "margin": 0.076,
+          "confident": false
+        },
+        {
+          "rows": [
+            74.7,
+            48.7,
+            177.3
+          ],
+          "marked_index": 2,
+          "margin": 0.579,
+          "confident": true
+        },
+        {
+          "rows": [
+            86.3,
+            188.1,
+            187.6,
+            96.3
+          ],
+          "marked_index": 1,
+          "margin": 0.003,
+          "confident": false
+        },
+        {
+          "rows": [
+            175.5,
+            50.5,
+            71.2
+          ],
+          "marked_index": 0,
+          "margin": 0.594,
+          "confident": true
+        }
+      ]
+    },
+    {
+      "file": "Unbenannt3.pdf",
+      "page": 1,
+      "band": [
+        2395,
+        2536
+      ],
+      "groups": [
+        {
+          "rows": [
+            95.8,
+            162.2,
+            91.5,
+            87.6
+          ],
+          "marked_index": 1,
+          "margin": 0.409,
+          "confident": true
+        },
+        {
+          "rows": [
+            165.0,
+            79.2,
+            75.6
+          ],
+          "marked_index": 0,
+          "margin": 0.52,
+          "confident": true
+        }
+      ]
+    }
+  ]
+}

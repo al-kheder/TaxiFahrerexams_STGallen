@@ -1,0 +1,17 @@
+node_modules/
+__pycache__/
+*.pyc
+.next/
+out/
+.extract-cache/
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+.env*
+
+# Scanned original Testbogen. Excluded from this PUBLIC repo by default: they
+# are the course provider's exam papers, not our code, and a git push is hard to
+# undo. The dataset in data/questions/ is what the app actually needs.
+# To publish them anyway, delete the line below and commit.
+assets/

@@ -1,0 +1,5 @@
+# Development inputs only — never imported by the app.
+assets/
+.extract-cache/
+tools/extract/
+content/
