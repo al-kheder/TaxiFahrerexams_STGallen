@@ -18,9 +18,9 @@ export function MistakesSession() {
       <BackLink />
       <PracticeSession
         questions={questions}
-        title="Meine Fehler"
+        title="Zu wiederholen"
         variant="ueben"
-        emptyMessage="Zurzeit keine offenen Fehler. Sobald du eine Frage falsch beantwortest, erscheint sie hier — und verschwindet wieder, sobald du sie richtig hast."
+        emptyMessage="Zurzeit nichts zu wiederholen. Sobald du eine Frage mit „Nicht gewusst“ beurteilst, erscheint sie hier — und verschwindet wieder, sobald du sie kannst."
       />
     </div>
   );

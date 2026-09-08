@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "ARV 2 Lernplattform — Taxiprüfung St. Gallen",
   description:
-    "Lernen und Prüfungssimulation für die ARV-2-Prüfung (berufsmässiger Personentransport) mit arabischen Erklärungen.",
+    "150 Lernfragen zur ARV 2 (berufsmässiger Personentransport) mit Lern-, Übungs- und Prüfungsmodus.",
 };
 
 export const viewport: Viewport = {
@@ -41,9 +41,9 @@ export default function RootLayout({
             {children}
           </main>
           <footer className="border-t border-border px-4 py-4 text-xs text-ink-muted">
-            Fragen und Antworten stammen aus den drei Original-Testbogen.
-            Markierte Antworten wurden aus dem Scan gelesen; unsichere Fälle sind
-            gekennzeichnet.
+            150 Lernfragen zur ARV 2 (Stand 1. März 2025). Keine wortwörtliche
+            Kopie eines Prüfungsbuches; kantonale und kommunale Taxiregeln können
+            zusätzlich gelten.
           </footer>
         </div>
       </body>

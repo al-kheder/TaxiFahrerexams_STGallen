@@ -3,52 +3,54 @@ import type { CategoryId } from "./types";
 export interface Category {
   id: CategoryId;
   label: string;
-  labelAr: string;
   description: string;
 }
 
 /**
- * The source sheets print no category labels. These are derived from the
- * subject matter of the questions themselves, which follow the same thematic
- * order on all three sheets. They are a navigation aid the app adds -- not
- * headings taken from the exam.
+ * The source groups its questions into five "Teile" by position, not by topic.
+ * These categories are derived from the subject matter so a learner can drill
+ * one area at a time; they are a navigation aid the app adds.
  */
 export const CATEGORIES: Category[] = [
   {
     id: "geltungsbereich",
-    label: "Geltungsbereich & Alkohol",
-    labelAr: "نطاق التطبيق والكحول",
-    description: "Wer der ARV 2 untersteht, wo sie gilt, Alkoholverbot",
-  },
-  {
-    id: "lenkzeit",
-    label: "Lenkzeit & Lenkpause",
-    labelAr: "مدة القيادة والاستراحة",
-    description: "Tägliche und wöchentliche Lenkzeit, Pausen am Steuer",
+    label: "Geltungsbereich & Begriffe",
+    description: "Wer und was der ARV 2 untersteht, Definitionen",
   },
   {
     id: "arbeitszeit",
     label: "Arbeitszeit & Überzeit",
-    labelAr: "ساعات العمل والساعات الإضافية",
-    description: "Präsenzzeit, Höchstarbeitszeit, Überstunden",
+    description: "Arbeitszeit, Höchstarbeitszeit, Überstunden und Ausgleich",
+  },
+  {
+    id: "lenkzeit",
+    label: "Lenkzeit & Lenkpause",
+    description: "Tägliche und wöchentliche Lenkzeit, Pausen am Steuer",
   },
   {
     id: "arbeitspause",
     label: "Arbeitspausen",
-    labelAr: "فترات الراحة أثناء العمل",
-    description: "Länge und Unterteilung der Arbeitspause",
+    description: "Länge, Aufteilung und Verteilung der Arbeitspause",
   },
   {
     id: "ruhezeit",
     label: "Ruhezeit & Ruhetage",
-    labelAr: "فترات الراحة والأيام الحرة",
-    description: "Tägliche Ruhezeit, Verkürzung, wöchentlicher Ruhetag",
+    description: "Tägliche Ruhezeit, Ruhetage, Ersatzruhe, freie Halbtage",
+  },
+  {
+    id: "fahrtschreiber",
+    label: "Fahrtschreiber & Einlageblätter",
+    description: "Bedienung des Fahrtschreibers, Blätter und Wochenbündel",
+  },
+  {
+    id: "arbeitsbuch",
+    label: "Arbeitsbuch & Tagesblatt",
+    description: "Führung des Arbeitsbuchs, Tagesblatt, Befreiungen",
   },
   {
     id: "kontrolle",
-    label: "Fahrtschreiber & Arbeitsbuch",
-    labelAr: "جهاز التسجيل ودفتر العمل",
-    description: "Fahrtschreiber, Einlageblätter, Arbeitsbuch, Kontrolle",
+    label: "Pflichten & Kontrolle",
+    description: "Notfall, Aufstellung, Arbeitgeberpflichten, Aufbewahrung",
   },
 ];
 

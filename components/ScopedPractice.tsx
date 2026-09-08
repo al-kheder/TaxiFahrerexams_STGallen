@@ -6,25 +6,22 @@ import { PracticeSession } from "./PracticeSession";
 import { CATEGORIES } from "@/lib/categories";
 import {
   allQuestions,
-  gradableIds,
+  idsOf,
   questionsByCategory,
-  questionsByTestbogen,
+  questionsByPart,
 } from "@/lib/repository";
 import { statsFor, useProgress } from "@/lib/progress";
 import type { CategoryId, Question } from "@/lib/types";
 
 type Scope =
   | { kind: "alle" }
-  | { kind: "testbogen"; sheet: number }
+  | { kind: "teil"; part: number }
   | { kind: "kategorie"; category: CategoryId };
 
 function resolve(scope: Scope): { questions: Question[]; label: string } {
   switch (scope.kind) {
-    case "testbogen":
-      return {
-        questions: questionsByTestbogen(scope.sheet),
-        label: `Testbogen ${scope.sheet}`,
-      };
+    case "teil":
+      return { questions: questionsByPart(scope.part), label: `Teil ${scope.part}` };
     case "kategorie": {
       const category = CATEGORIES.find((c) => c.id === scope.category);
       return {
@@ -97,20 +94,22 @@ function ScopePicker({
           onClick={() => onPick({ kind: "alle" })}
           title="Alle Fragen"
           meta={`${allQuestions().length} Fragen`}
-          progress={statsFor(progress, gradableIds())}
+          progress={statsFor(progress, idsOf(allQuestions()))}
         />
       </Group>
 
-      <Group title="Nach Testbogen">
-        {[1, 2, 3].map((sheet) => {
-          const questions = questionsByTestbogen(sheet);
+      <Group title="Nach Teil">
+        {[1, 2, 3, 4, 5].map((part) => {
+          const questions = questionsByPart(part);
+          const first = questions[0]?.number;
+          const last = questions[questions.length - 1]?.number;
           return (
             <ScopeButton
-              key={sheet}
-              onClick={() => onPick({ kind: "testbogen", sheet })}
-              title={`Testbogen ${sheet}`}
-              meta={`${questions.length} Fragen`}
-              progress={statsFor(progress, gradableIds(questions))}
+              key={part}
+              onClick={() => onPick({ kind: "teil", part })}
+              title={`Teil ${part}`}
+              meta={`Fragen ${first}–${last}`}
+              progress={statsFor(progress, idsOf(questions))}
             />
           );
         })}
@@ -125,7 +124,7 @@ function ScopePicker({
               onClick={() => onPick({ kind: "kategorie", category: category.id })}
               title={category.label}
               meta={`${questions.length} Fragen · ${category.description}`}
-              progress={statsFor(progress, gradableIds(questions))}
+              progress={statsFor(progress, idsOf(questions))}
             />
           );
         })}

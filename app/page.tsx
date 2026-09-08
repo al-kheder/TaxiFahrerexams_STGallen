@@ -1,30 +1,30 @@
 import Link from "next/link";
 import { StatsStrip } from "@/components/StatsStrip";
-import { allQuestions, flaggedQuestions } from "@/lib/repository";
+import { allQuestions } from "@/lib/repository";
 
 const MODES = [
   {
     href: "/lernen",
     title: "Lernen",
-    description: "Frage für Frage mit sofortiger Antwort und arabischer Erklärung",
+    description: "Frage lesen, Antwort aufdecken, weiter — ohne Bewertung",
     icon: "📖",
   },
   {
     href: "/ueben",
     title: "Üben",
-    description: "Erst antworten, dann prüfen — mit direktem Feedback",
+    description: "Antwort erst abrufen, dann aufdecken und selbst beurteilen",
     icon: "✏️",
   },
   {
     href: "/pruefung",
     title: "Prüfungssimulation",
-    description: "30 Fragen am Stück, Auswertung erst am Schluss",
+    description: "Ein langer Durchgang mit Auswertung am Schluss",
     icon: "🎯",
   },
   {
     href: "/fehler",
-    title: "Meine Fehler",
-    description: "Nur Fragen, die zuletzt falsch beantwortet wurden",
+    title: "Zu wiederholen",
+    description: "Nur Fragen, die du zuletzt nicht wusstest",
     icon: "🔁",
   },
   {
@@ -43,17 +43,16 @@ const MODES = [
 
 export default function HomePage() {
   const total = allQuestions().length;
-  const flagged = flaggedQuestions().length;
 
   return (
     <div className="flex flex-col gap-6">
       <section>
         <h1 className="text-2xl font-bold tracking-tight text-ink">
-          Berufsmässiger Personentransport ARV 2
+          ARV 2 — Taxi: {total} Prüfungsfragen
         </h1>
         <p className="mt-1.5 text-sm text-ink-muted">
-          {total} Fragen aus drei Original-Testbogen, mit kurzen Erklärungen auf
-          Arabisch.
+          Kurze Lernfragen zu Arbeits-, Lenk- und Ruhezeit, in fünf Teile
+          gegliedert.
         </p>
       </section>
 
@@ -91,17 +90,12 @@ export default function HomePage() {
         Mein Lernfortschritt
       </Link>
 
-      {flagged > 0 && (
-        <p className="rounded-xl border border-warn/40 bg-warn-soft px-3.5 py-3 text-[13px] leading-relaxed text-warn">
-          <strong>Hinweis:</strong> Bei {flagged} von {total} Fragen ist die im
-          Original markierte Antwort nicht eindeutig oder widerspricht einem
-          anderen Testbogen. Diese Fragen sind gekennzeichnet und zählen in der
-          Prüfungssimulation nicht.{" "}
-          <Link href="/fragen?nurPruefen=1" className="underline">
-            Betroffene Fragen ansehen
-          </Link>
-        </p>
-      )}
+      <p className="rounded-xl border border-border bg-surface px-3.5 py-3 text-[13px] leading-relaxed text-ink-muted">
+        <strong className="text-ink">Zur Quelle:</strong> Die Fragen sind kurze
+        Lernfragen zur ARV 2 (Stand 1. März 2025) und keine wortwörtliche Kopie
+        eines bestimmten Prüfungsbuches. Für die Prüfung können kantonale oder
+        kommunale Taxiregeln zusätzlich relevant sein.
+      </p>
     </div>
   );
 }

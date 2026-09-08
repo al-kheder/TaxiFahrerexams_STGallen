@@ -1,62 +1,37 @@
-export type OptionKey = "a" | "b" | "c";
-
 export type CategoryId =
   | "geltungsbereich"
-  | "lenkzeit"
   | "arbeitszeit"
+  | "lenkzeit"
   | "arbeitspause"
   | "ruhezeit"
+  | "fahrtschreiber"
+  | "arbeitsbuch"
   | "kontrolle";
 
-export interface AnswerOption {
-  key: OptionKey;
-  text: string;
-}
-
-export interface Question {
-  /** Stable id, e.g. "t1-f16". Used as the key for all stored progress. */
-  id: string;
-  testbogen: 1 | 2 | 3;
-  /** Question number as printed on the sheet (1-30). */
-  number: number;
-  /**
-   * Groups questions that test the same underlying rule across the three
-   * sheets. Lets progress single out a weak topic even though each sheet words
-   * the rule differently, and lets the app surface disagreements between sheets.
-   */
-  topicKey: string;
-  category: CategoryId;
-  /**
-   * One short Arabic line saying what this question is actually asking and what
-   * separates the three options. Shown before answering, unlike explanationAr.
-   *
-   * Deliberately a description, not a translation of the German: the learner
-   * has to sit the exam in German, so the app orients them without letting them
-   * answer from the Arabic alone.
-   */
-  questionAr: string;
-  options: AnswerOption[];
-  /** null only when the marked answer could not be determined from the scan. */
-  correct: OptionKey | null;
-  /** Short Arabic explanation of why the marked option is the correct one. */
-  explanationAr: string;
-  /** Provenance, e.g. "Testbogen 1, Frage 16". */
-  source: string;
-  /**
-   * True when the answer read off the scan is not trustworthy on its own --
-   * a faint mark, or a sheet that disagrees with another sheet. The UI must
-   * show this rather than presenting the answer as settled fact.
-   */
-  needsVerification?: boolean;
-  /** Human-readable reason accompanying needsVerification. */
-  verificationNote?: string;
-}
-
 /**
- * The sheets print no question stem: each numbered block is simply three
- * statements and the candidate marks the one that is correct. This is the
- * instruction the app shows in place of a stem -- it is presentation, not
- * source text, and is deliberately kept in one place so it never looks like an
- * extracted question.
+ * One question from the 150-question ARV 2 set.
+ *
+ * The source poses open questions with a single written answer -- there are no
+ * multiple-choice options to pick from. The app therefore works as a flashcard:
+ * read the question, recall the answer, reveal it, and say whether you knew it.
+ * Inventing plausible-but-wrong options to turn these into multiple choice
+ * would mean authoring exam content that is not in the source, so we don't.
  */
-export const QUESTION_PROMPT = "Welche Aussage ist richtig?";
+export interface Question {
+  /** Stable id, e.g. "f49". Used as the key for all stored progress. */
+  id: string;
+  /** Question number as printed in the source (1-150). */
+  number: number;
+  /** "Teil" the source groups this question under (1-5). */
+  part: number;
+  category: CategoryId;
+  /** The question, verbatim from the source. */
+  question: string;
+  /** The answer, verbatim from the source (printed there as "Richtig: ..."). */
+  answer: string;
+  /** Provenance, e.g. "ARV 2 – 150 Prüfungsfragen, Frage 49". */
+  source: string;
+}
+
+/** How the learner rated their own recall after revealing the answer. */
+export type Recall = "knew" | "missed";

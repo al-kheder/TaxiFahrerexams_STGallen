@@ -1,85 +1,63 @@
-import type { OptionKey, Question } from "./types";
+import type { Question, Recall } from "./types";
 
 /**
  * Quiz engine: pure functions over a question list. No React, no storage, so
- * the grading rules can be unit-tested and reused by any screen.
+ * the rules can be unit-tested and reused by any screen.
+ *
+ * The source has open questions with a written answer rather than options to
+ * choose from, so scoring is self-assessed: the learner reveals the answer and
+ * says whether they knew it. That is honest about what the app can actually
+ * measure -- it cannot mark free recall on its own.
  */
 
 export type Mode = "lernen" | "ueben" | "pruefung";
 
-export interface ExamAnswer {
+export interface SessionAnswer {
   questionId: string;
-  chosen: OptionKey | null;
+  /** null when the learner skipped the question without revealing it. */
+  recall: Recall | null;
 }
 
 export interface GradedAnswer {
   question: Question;
-  chosen: OptionKey | null;
-  /**
-   * null when the question is unscorable -- its answer could not be read off
-   * the scan. These are excluded from the score instead of being counted
-   * wrong, which would punish the learner for a defect in the source.
-   */
-  correct: boolean | null;
+  recall: Recall | null;
 }
 
-export interface ExamResult {
+export interface SessionResult {
   graded: GradedAnswer[];
-  /** Questions that carried a readable answer and could therefore be scored. */
-  scorable: number;
-  correct: number;
-  wrong: number;
-  unanswered: number;
-  /** Excluded from scoring because the source answer is unverified. */
-  excluded: number;
+  total: number;
+  knew: number;
+  missed: number;
+  skipped: number;
+  /** Share of the questions the learner rated as known, 0-100. */
   percentage: number;
 }
 
-/**
- * null means "not scorable": either no answer could be read off the scan, or
- * the answer that was read is disputed by another Testbogen. Grading a learner
- * against an answer we do not trust would be worse than not grading them, so
- * these questions are shown and explained but never counted right or wrong.
- */
-export function isCorrect(question: Question, chosen: OptionKey | null): boolean | null {
-  if (question.correct === null || question.needsVerification) return null;
-  if (chosen === null) return false;
-  return question.correct === chosen;
-}
-
-/** Questions that carry a trustworthy answer and can therefore be scored. */
-export function isGradable(question: Question): boolean {
-  return question.correct !== null && !question.needsVerification;
-}
-
-export function gradeExam(
+export function gradeSession(
   questions: Question[],
-  answers: Map<string, OptionKey | null>,
-): ExamResult {
-  const graded: GradedAnswer[] = questions.map((question) => {
-    const chosen = answers.get(question.id) ?? null;
-    return { question, chosen, correct: isCorrect(question, chosen) };
-  });
+  answers: Map<string, Recall | null>,
+): SessionResult {
+  const graded: GradedAnswer[] = questions.map((question) => ({
+    question,
+    recall: answers.get(question.id) ?? null,
+  }));
 
-  const scorableAnswers = graded.filter((g) => g.correct !== null);
-  const correct = scorableAnswers.filter((g) => g.correct).length;
-  const unanswered = graded.filter((g) => g.chosen === null).length;
+  const knew = graded.filter((g) => g.recall === "knew").length;
+  const missed = graded.filter((g) => g.recall === "missed").length;
+  const skipped = graded.filter((g) => g.recall === null).length;
 
   return {
     graded,
-    scorable: scorableAnswers.length,
-    correct,
-    wrong: scorableAnswers.length - correct,
-    unanswered,
-    excluded: graded.length - scorableAnswers.length,
+    total: questions.length,
+    knew,
+    missed,
+    skipped,
     percentage:
-      scorableAnswers.length === 0
-        ? 0
-        : Math.round((correct / scorableAnswers.length) * 100),
+      questions.length === 0 ? 0 : Math.round((knew / questions.length) * 100),
   };
 }
 
-/** Fisher-Yates, seeded from Math.random. Used only for exam question order. */
+/** Fisher-Yates. Used for shuffled practice and exam order. */
 export function shuffle<T>(items: T[]): T[] {
   const out = [...items];
   for (let i = out.length - 1; i > 0; i--) {

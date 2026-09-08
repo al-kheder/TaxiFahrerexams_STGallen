@@ -1,22 +1,25 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-import type { OptionKey } from "./types";
+import type { Recall } from "./types";
 
-const STORAGE_KEY = "arv2-progress-v1";
+// v2: the question set and the attempt shape both changed when the source
+// switched from the multiple-choice Testbogen to the 150 open questions. A new
+// key discards the old progress instead of silently misreading it.
+const STORAGE_KEY = "arv2-progress-v2";
 
 export interface QuestionProgress {
   /** Every answer given, newest last. Kept so accuracy reflects real history. */
-  attempts: { chosen: OptionKey; correct: boolean; at: number }[];
+  attempts: { recall: Recall; at: number }[];
 }
 
 export interface ProgressState {
-  version: 1;
+  version: 2;
   questions: Record<string, QuestionProgress>;
   favorites: string[];
 }
 
-const EMPTY: ProgressState = { version: 1, questions: {}, favorites: [] };
+const EMPTY: ProgressState = { version: 2, questions: {}, favorites: [] };
 
 let state: ProgressState = EMPTY;
 let loaded = false;
@@ -28,9 +31,9 @@ function read(): ProgressState {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return EMPTY;
     const parsed = JSON.parse(raw) as ProgressState;
-    if (parsed?.version !== 1 || typeof parsed.questions !== "object") return EMPTY;
+    if (parsed?.version !== 2 || typeof parsed.questions !== "object") return EMPTY;
     return {
-      version: 1,
+      version: 2,
       questions: parsed.questions ?? {},
       favorites: Array.isArray(parsed.favorites) ? parsed.favorites : [],
     };
@@ -85,21 +88,18 @@ function update(next: ProgressState) {
 export function useProgress() {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  const recordAnswer = useCallback(
-    (questionId: string, chosen: OptionKey, correct: boolean) => {
-      const existing = state.questions[questionId] ?? { attempts: [] };
-      update({
-        ...state,
-        questions: {
-          ...state.questions,
-          [questionId]: {
-            attempts: [...existing.attempts, { chosen, correct, at: Date.now() }],
-          },
+  const recordRecall = useCallback((questionId: string, recall: Recall) => {
+    const existing = state.questions[questionId] ?? { attempts: [] };
+    update({
+      ...state,
+      questions: {
+        ...state.questions,
+        [questionId]: {
+          attempts: [...existing.attempts, { recall, at: Date.now() }],
         },
-      });
-    },
-    [],
-  );
+      },
+    });
+  }, []);
 
   const toggleFavorite = useCallback((questionId: string) => {
     const has = state.favorites.includes(questionId);
@@ -113,7 +113,7 @@ export function useProgress() {
 
   const reset = useCallback(() => update({ ...EMPTY, favorites: [] }), []);
 
-  return { progress: snapshot, recordAnswer, toggleFavorite, reset };
+  return { progress: snapshot, recordRecall, toggleFavorite, reset };
 }
 
 /* ---------- derived helpers (pure, so they are easy to test) ---------- */
@@ -128,12 +128,12 @@ export function isAnswered(progress: ProgressState, questionId: string): boolean
 }
 
 /**
- * A question counts as a "mistake" while its most recent answer was wrong.
- * Answering it correctly retires it from the mistake list, so the list shrinks
- * as the learner improves rather than accumulating forever.
+ * A question counts as a "mistake" while the learner's most recent rating was
+ * "missed". Rating it "knew" retires it from the list, so the list shrinks as
+ * they improve rather than accumulating forever.
  */
 export function isMistake(progress: ProgressState, questionId: string): boolean {
-  return lastAttempt(progress, questionId)?.correct === false;
+  return lastAttempt(progress, questionId)?.recall === "missed";
 }
 
 export function mistakeIds(progress: ProgressState): string[] {
@@ -158,7 +158,7 @@ export function statsFor(
     const last = lastAttempt(progress, id);
     if (!last) continue;
     answered += 1;
-    if (last.correct) correct += 1;
+    if (last.recall === "knew") correct += 1;
   }
   return {
     total: questionIds.length,

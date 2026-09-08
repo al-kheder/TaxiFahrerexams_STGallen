@@ -3,40 +3,36 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { CATEGORIES, categoryLabel } from "@/lib/categories";
-import { relatedQuestions, searchQuestions } from "@/lib/repository";
+import { searchQuestions } from "@/lib/repository";
 import { isAnswered, isMistake, useProgress } from "@/lib/progress";
-import { QUESTION_PROMPT, type CategoryId, type Question } from "@/lib/types";
+import type { CategoryId, Question } from "@/lib/types";
 
-type StatusFilter = "alle" | "offen" | "richtig" | "falsch" | "gemerkt" | "pruefen";
+type StatusFilter = "alle" | "offen" | "gewusst" | "nicht" | "gemerkt";
 
-export function QuestionBrowser({ initialOnlyFlagged }: { initialOnlyFlagged: boolean }) {
+export function QuestionBrowser() {
   const { progress, toggleFavorite } = useProgress();
   const [text, setText] = useState("");
   const [category, setCategory] = useState<CategoryId | "all">("all");
-  const [sheet, setSheet] = useState<number | "all">("all");
-  const [status, setStatus] = useState<StatusFilter>(
-    initialOnlyFlagged ? "pruefen" : "alle",
-  );
+  const [part, setPart] = useState<number | "all">("all");
+  const [status, setStatus] = useState<StatusFilter>("alle");
 
   const results = useMemo(() => {
-    const base = searchQuestions({ text, category, testbogen: sheet });
+    const base = searchQuestions({ text, category, part });
     return base.filter((q) => {
       switch (status) {
         case "offen":
           return !isAnswered(progress, q.id);
-        case "richtig":
+        case "gewusst":
           return isAnswered(progress, q.id) && !isMistake(progress, q.id);
-        case "falsch":
+        case "nicht":
           return isMistake(progress, q.id);
         case "gemerkt":
           return progress.favorites.includes(q.id);
-        case "pruefen":
-          return !!q.needsVerification;
         default:
           return true;
       }
     });
-  }, [text, category, sheet, status, progress]);
+  }, [text, category, part, status, progress]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -51,7 +47,7 @@ export function QuestionBrowser({ initialOnlyFlagged }: { initialOnlyFlagged: bo
         type="search"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Im Fragetext suchen …"
+        placeholder="In Frage und Antwort suchen …"
         aria-label="Fragen durchsuchen"
         className="w-full rounded-xl border border-border bg-surface px-3.5 py-3 text-[15px] text-ink placeholder:text-ink-muted"
       />
@@ -72,13 +68,13 @@ export function QuestionBrowser({ initialOnlyFlagged }: { initialOnlyFlagged: bo
           ))}
         </FilterRow>
 
-        <FilterRow label="Testbogen">
-          <Chip active={sheet === "all"} onClick={() => setSheet("all")}>
+        <FilterRow label="Teil">
+          <Chip active={part === "all"} onClick={() => setPart("all")}>
             Alle
           </Chip>
-          {[1, 2, 3].map((s) => (
-            <Chip key={s} active={sheet === s} onClick={() => setSheet(s)}>
-              {s}
+          {[1, 2, 3, 4, 5].map((p) => (
+            <Chip key={p} active={part === p} onClick={() => setPart(p)}>
+              {p}
             </Chip>
           ))}
         </FilterRow>
@@ -88,10 +84,9 @@ export function QuestionBrowser({ initialOnlyFlagged }: { initialOnlyFlagged: bo
             [
               ["alle", "Alle"],
               ["offen", "Unbearbeitet"],
-              ["richtig", "Richtig"],
-              ["falsch", "Falsch"],
+              ["gewusst", "Gewusst"],
+              ["nicht", "Nicht gewusst"],
               ["gemerkt", "Gemerkt"],
-              ["pruefen", "Zu prüfen"],
             ] as [StatusFilter, string][]
           ).map(([value, label]) => (
             <Chip
@@ -182,7 +177,6 @@ function QuestionRow({
   onToggleFavorite: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const related = relatedQuestions(question);
 
   return (
     <div className="rounded-xl border border-border bg-surface">
@@ -195,24 +189,14 @@ function QuestionRow({
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-1.5 text-[11px]">
             <span className="rounded-full bg-surface-sunken px-2 py-0.5 font-medium text-ink-muted">
-              {question.source}
+              Frage {question.number}
             </span>
             <span className="rounded-full bg-brand-soft px-2 py-0.5 font-medium text-brand">
               {categoryLabel(question.category)}
             </span>
-            {question.needsVerification && (
-              <span className="rounded-full bg-warn-soft px-2 py-0.5 font-medium text-warn">
-                ⚠ zu prüfen
-              </span>
-            )}
           </span>
-          <span className="arabic mt-1.5 block text-sm leading-relaxed text-ink">
-            {question.questionAr}
-          </span>
-          <span className="mt-1 block text-[13px] leading-snug text-ink-muted">
-            {question.correct
-              ? question.options.find((o) => o.key === question.correct)?.text
-              : QUESTION_PROMPT}
+          <span className="mt-1.5 block text-sm font-medium leading-snug text-ink">
+            {question.question}
           </span>
         </span>
         <span aria-hidden className="mt-1 text-ink-muted">
@@ -222,49 +206,10 @@ function QuestionRow({
 
       {open && (
         <div className="border-t border-border px-3.5 py-3">
-          <ul className="flex flex-col gap-1.5">
-            {question.options.map((option) => {
-              const marked = option.key === question.correct;
-              const trusted = marked && !question.needsVerification;
-              return (
-                <li
-                  key={option.key}
-                  className={`flex gap-2 rounded-lg px-2.5 py-2 text-sm ${
-                    trusted
-                      ? "bg-correct-soft text-ink"
-                      : marked
-                        ? "bg-warn-soft text-ink"
-                        : "text-ink-muted"
-                  }`}
-                >
-                  <span
-                    className={
-                      trusted
-                        ? "font-bold text-correct"
-                        : marked
-                          ? "font-bold text-warn"
-                          : ""
-                    }
-                  >
-                    {trusted ? "✓" : marked ? "◆" : option.key}
-                  </span>
-                  <span>{option.text}</span>
-                </li>
-              );
-            })}
-          </ul>
-
-          <p className="arabic mt-3 rounded-lg bg-surface-sunken px-3 py-2.5 text-sm text-ink">
-            {question.explanationAr}
+          <p className="rounded-lg bg-correct-soft px-3 py-2.5 text-sm text-ink">
+            {question.answer}
           </p>
-
-          {related.length > 0 && (
-            <p className="mt-3 text-xs text-ink-muted">
-              Gleiche Regel auch in:{" "}
-              {related.map((r) => r.source).join(", ")}
-            </p>
-          )}
-
+          <p className="mt-2 text-[11px] text-ink-muted">{question.source}</p>
           <button
             type="button"
             onClick={onToggleFavorite}

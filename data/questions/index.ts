@@ -1,18 +1,22 @@
 import type { Question } from "@/lib/types";
-import { testbogen1 } from "./testbogen-1";
-import { testbogen2 } from "./testbogen-2";
-import { testbogen3 } from "./testbogen-3";
+import { teil1 } from "./teil-1";
+import { teil2 } from "./teil-2";
+import { teil3 } from "./teil-3";
+import { teil4 } from "./teil-4";
+import { teil5 } from "./teil-5";
 
 /**
- * All extracted questions, in sheet order. Adding a fourth Testbogen means
- * adding one file and one entry here -- nothing in the UI needs to change.
+ * All 150 questions in source order. Adding a further Teil means adding one
+ * file and one entry here -- nothing in the UI needs to change.
  */
 export const ALL_QUESTIONS: Question[] = [
-  ...testbogen1,
-  ...testbogen2,
-  ...testbogen3,
+  ...teil1,
+  ...teil2,
+  ...teil3,
+  ...teil4,
+  ...teil5,
 ];
 
-export const TESTBOGEN_NUMBERS = [1, 2, 3] as const;
+export const PARTS = [1, 2, 3, 4, 5] as const;
 
-export { testbogen1, testbogen2, testbogen3 };
+export { teil1, teil2, teil3, teil4, teil5 };

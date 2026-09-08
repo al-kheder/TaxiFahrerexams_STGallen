@@ -1,6 +1,6 @@
 "use client";
 
-import { gradableIds } from "@/lib/repository";
+import { allQuestions, idsOf } from "@/lib/repository";
 import { mistakeIds, statsFor, useProgress } from "@/lib/progress";
 
 /**
@@ -9,7 +9,7 @@ import { mistakeIds, statsFor, useProgress } from "@/lib/progress";
  */
 export function StatsStrip() {
   const { progress } = useProgress();
-  const ids = gradableIds();
+  const ids = idsOf(allQuestions());
   const stats = statsFor(progress, ids);
   const mistakes = mistakeIds(progress).length;
 
@@ -20,7 +20,7 @@ export function StatsStrip() {
         label="Genauigkeit"
         value={stats.answered === 0 ? "—" : `${Math.round(stats.accuracy * 100)}%`}
       />
-      <Cell label="Offene Fehler" value={String(mistakes)} />
+      <Cell label="Zu wiederholen" value={String(mistakes)} />
     </dl>
   );
 }

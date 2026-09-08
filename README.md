@@ -1,24 +1,18 @@
 # ARV 2 Lernplattform — Taxiprüfung St. Gallen
 
-A learning and exam-simulation app for the Swiss **ARV 2** examination
-(*Berufsmässiger Personentransport* — professional passenger transport), built
-from three original Testbogen. 90 questions, German wording preserved verbatim,
-each with a short Arabic description of what it asks and a short Arabic
-explanation of the answer.
+A learning app for the Swiss **ARV 2** examination (*Berufsmässiger
+Personentransport* — professional passenger transport). 150 short questions on
+working, driving and rest time, in German, grouped into five parts.
 
 ## What is in here
 
 ```
-assets/                     the three scanned Testbogen (source of truth)
-content/extraction/         how the answer key was read, and the key itself
-  answer-key.md             method, the 90 answers, and the 5 disputed ones
-  markers-testbogen-*.json  raw darkness measurements per page
-tools/extract/              the scan-reading tools (Python, no dependencies)
-tools/validate-content.ts   content validation, run in CI and before deploys
-data/questions/             the dataset: one file per Testbogen
+data/questions/             the dataset: one file per Teil (30 questions each)
 lib/                        types, repository, quiz engine, progress store
 components/                 UI
 app/                        Next.js App Router pages
+tools/validate-content.ts   dataset integrity check, run before deploys
+archive/testbogen-scan/     the app's previous source, kept as provenance only
 ```
 
 ## Running it
@@ -33,7 +27,7 @@ npm run dev
 | `npm run dev` | development server on http://localhost:3000 |
 | `npm run build` | production build |
 | `npm run typecheck` | TypeScript, no emit |
-| `npm test` | unit tests for the grading rules and the dataset |
+| `npm test` | unit tests for the session rules and the dataset |
 | `npm run validate:content` | dataset integrity check |
 
 There are **no environment variables**. Progress is stored in the browser's
@@ -41,107 +35,84 @@ There are **no environment variables**. Progress is stored in the browser's
 
 ## Deploying to Vercel
 
-The app is a stock Next.js App Router project, so Vercel needs no configuration
-beyond its defaults.
-
-1. Push the repository to GitHub/GitLab/Bitbucket.
-2. In Vercel, **Add New → Project** and import it.
-3. Accept the detected settings — Framework **Next.js**, build `next build`,
-   install `npm install`. Leave the output directory blank.
-4. Deploy.
-
-Or from the CLI:
+A stock Next.js App Router project, so Vercel needs no configuration beyond its
+defaults. The project is already linked; to redeploy:
 
 ```bash
-npx vercel --prod
+npx vercel deploy --prod --yes
 ```
 
-Before deploying, run the checks locally:
+Run the checks first:
 
 ```bash
 npm run validate:content && npm run typecheck && npm test && npm run build
 ```
 
-Notes that matter for Vercel specifically:
-
-- No `localhost` URLs are referenced anywhere in the app code.
-- All routes are static except `/fragen`, which reads a query parameter and is
-  server-rendered on demand. Both work on Vercel without extra config.
-- `assets/` and `.extract-cache/` are development inputs only. `.extract-cache/`
-  is git-ignored; `assets/` is kept in the repo as provenance for the dataset
-  but is never imported by the app, so it is not part of the bundle.
+For a fresh setup: import the repository in Vercel, accept the detected settings
+(Framework **Next.js**, build `next build`), and deploy. No `localhost` URLs are
+referenced anywhere in the app code, and every route is static.
 
 ## The dataset
 
-Each question is one object in `data/questions/testbogen-N.ts`:
+Each question is one object in `data/questions/teil-N.ts`:
 
 ```ts
 {
-  id: "t1-f16",
-  testbogen: 1,
-  number: 16,
-  topicKey: "arbeitspause-6h",     // links the same rule across sheets
-  category: "arbeitspause",
-  questionAr: "ما الحد الأدنى لاستراحة العمل عند العمل 6 ساعات؟",
-  options: [{ key: "a", text: "…" }, …],
-  correct: "b",                     // or null when unreadable
-  explanationAr: "التوضيح: …",
-  source: "Testbogen 1, Frage 16",
-  needsVerification: true,          // optional
-  verificationNote: "…"             // required when flagged
+  id: "f49",
+  number: 49,                  // as printed in the source, 1–150
+  part: 2,                     // the "Teil" the source groups it under
+  category: "arbeitspause",    // ours, for topic filtering
+  question: "Wie lange muss die Arbeitspause bei bis zu 7 Stunden Tagesarbeitszeit sein?",
+  answer: "Mindestens 20 Minuten.",
+  source: "ARV 2 – 150 Prüfungsfragen, Frage 49",
 }
 ```
 
-Adding a fourth Testbogen means adding one file and one line in
+Adding a further Teil means adding one file and one line in
 `data/questions/index.ts`. Nothing in the UI needs to change.
 
 ### Three deliberate constraints
 
-**The sheets print no question text.** Each numbered block is simply three
-statements; the candidate marks the one that is correct. The app therefore shows
-a single shared instruction — `QUESTION_PROMPT` in `lib/types.ts` — rather than
-90 invented German question sentences. It is presentation, not source content,
-and is kept in one place so it can never be mistaken for extracted text.
+**The questions are open, so the app cannot mark them.** The source gives one
+written answer per question, not options to choose from. The app therefore works
+as a flashcard: read the question, recall the answer, reveal it, and rate
+yourself *Gewusst* / *Nicht gewusst*. Inventing plausible-but-wrong options to
+turn these into multiple choice would mean authoring exam content that is not in
+the source, so we don't.
 
-**Arabic is a description, not a translation.** `questionAr` says what the
-question asks and what separates the options; it is shown before answering.
-`explanationAr` says why the answer is right and appears after. Neither
-translates the German options, because the exam itself is sat in German — the
-learner has to read the German statements to choose.
+**Scoring is self-reported, and says so.** Every result screen states that the
+percentage reflects the learner's own rating rather than a judgement by the app,
+and no pass/fail verdict is shown.
 
-**Categories are ours, not the exam's.** The sheets carry no category headings.
-The six categories in `lib/categories.ts` are derived from the subject matter,
-which follows the same thematic order on all three sheets. They are a navigation
-aid the app adds.
+**Categories are ours, not the source's.** The source groups questions into five
+Teile by position, not by topic. The eight categories in `lib/categories.ts` are
+derived from the subject matter so a learner can drill one area at a time; they
+are a navigation aid the app adds.
 
-## Accuracy
+## Content integrity
 
-The answer key is the whole product, so it is treated as such:
+`npm run validate:content` fails the build on a defective dataset. It checks
+150 questions, 30 per Teil, numbers 1–150 with no gaps or duplicates, ids
+matching their numbers, each question assigned to the Teil its number falls in,
+a known category, non-empty question and answer text, and — because the source
+PDF is bilingual while this app ships German only — that no Arabic text has
+survived transcription. The unit tests assert the same invariants.
 
-- Answers were measured from the scans, then **verified individually at double
-  magnification** using composed strips that put the question number, the option
-  letter and the marker cell side by side. That pass caught two genuine
-  off-by-one errors — see `content/extraction/answer-key.md`.
-- Where two sheets ask the same rule, their keys were compared. 14 rules appear
-  on more than one sheet and agree.
-- **Five questions carry contradictions in the source material.** The app shows
-  the marked answer, states the conflict, and does not score them. They are
-  listed in `content/extraction/answer-key.md` and reachable in the app at
-  `/fragen?nurPruefen=1`.
+## About the source
 
-`npm run validate:content` enforces the structural rules: 30 questions per
-sheet, exactly three options a/b/c, an answer that is one of them, Arabic text
-in both the description and the explanation, and a written note on every flagged
-question.
+The questions come from a 150-question ARV 2 study set (Stand 1. März 2025).
+Its own preface notes that it is **not a verbatim copy** of any particular
+private exam book, and that cantonal or communal taxi rules may additionally
+apply. The app repeats that caveat on the home screen.
+
+The Arabic translations printed alongside the German in the source PDF are
+deliberately **not** included: the exam is sat in German, and the validator
+treats leftover Arabic as an error.
 
 ## Known gaps
 
-- **No pass threshold.** The official ARV 2 pass mark is not in the source
-  material. The exam screen reports a score and explicitly declines to say
-  "bestanden". Provide the official figure and it can be added.
-- **No time limit.** Likewise unknown, so the exam shows an elapsed-time
-  stopwatch labelled *nur Information* rather than a countdown.
-- **No difficulty ratings.** The sheets do not grade their questions, so the app
-  does not invent difficulty levels; filtering is by topic, sheet and status.
-- The five flagged questions above need confirmation against the ARV 2 text
-  (SR 822.222) or the course provider.
+- **No pass threshold and no time limit.** Neither is in the source, and with
+  self-rated answers a pass mark would be meaningless anyway. The exam screen
+  reports a percentage and an elapsed-time stopwatch labelled *nur Information*.
+- **No difficulty ratings.** The source does not grade its questions, so the app
+  does not invent difficulty levels; filtering is by topic, Teil and status.

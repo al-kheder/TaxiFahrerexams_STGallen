@@ -1,20 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { QuestionCard, type Reveal } from "./QuestionCard";
+import { useState } from "react";
+import { QuestionCard } from "./QuestionCard";
 import { ProgressBar } from "./ProgressBar";
-import { isCorrect } from "@/lib/quiz";
 import { useProgress } from "@/lib/progress";
-import type { OptionKey, Question } from "@/lib/types";
+import type { Question, Recall } from "@/lib/types";
 
 interface Props {
   questions: Question[];
   title: string;
   /**
-   * "lernen" reveals the answer as soon as an option is picked -- the fastest
-   * loop for memorising. "ueben" requires an explicit check first, which forces
-   * the learner to commit before seeing the answer.
+   * "lernen" is study mode: reveal the answer and move on, nothing is rated.
+   * "ueben" asks the learner to rate their recall, which feeds the mistake
+   * queue and the progress dashboard.
    */
   variant: "lernen" | "ueben";
   emptyMessage?: string;
@@ -26,19 +25,13 @@ export function PracticeSession({
   variant,
   emptyMessage,
 }: Props) {
-  const { progress, recordAnswer, toggleFavorite } = useProgress();
+  const { progress, recordRecall, toggleFavorite } = useProgress();
   const [index, setIndex] = useState(0);
-  const [chosen, setChosen] = useState<OptionKey | null>(null);
   const [revealed, setRevealed] = useState(false);
-  const [tally, setTally] = useState({ correct: 0, wrong: 0, skipped: 0 });
+  const [tally, setTally] = useState({ knew: 0, missed: 0 });
 
   const question = questions[index];
   const finished = index >= questions.length;
-
-  const reveal: Reveal = useMemo(
-    () => (revealed ? { state: "revealed", chosen } : { state: "hidden" }),
-    [revealed, chosen],
-  );
 
   if (questions.length === 0) {
     return (
@@ -54,19 +47,23 @@ export function PracticeSession({
       <div className="rounded-2xl border border-border bg-surface p-5 text-center">
         <h1 className="text-xl font-semibold text-ink">Durchgang beendet</h1>
         <p className="mt-2 text-sm text-ink-muted">{title}</p>
-        <dl className="mt-5 grid grid-cols-3 gap-3">
-          <Stat label="Richtig" value={tally.correct} tone="correct" />
-          <Stat label="Falsch" value={tally.wrong} tone="wrong" />
-          <Stat label="Ungewertet" value={tally.skipped} tone="warn" />
-        </dl>
+        {variant === "ueben" ? (
+          <dl className="mt-5 grid grid-cols-2 gap-3">
+            <Stat label="Gewusst" value={tally.knew} tone="text-correct" />
+            <Stat label="Nicht gewusst" value={tally.missed} tone="text-wrong" />
+          </dl>
+        ) : (
+          <p className="mt-4 text-sm text-ink-muted">
+            {questions.length} Fragen durchgearbeitet.
+          </p>
+        )}
         <div className="mt-6 flex flex-col gap-2">
           <button
             type="button"
             onClick={() => {
               setIndex(0);
-              setChosen(null);
               setRevealed(false);
-              setTally({ correct: 0, wrong: 0, skipped: 0 });
+              setTally({ knew: 0, missed: 0 });
             }}
             className="rounded-xl bg-brand px-4 py-3 font-semibold text-white"
           >
@@ -83,31 +80,17 @@ export function PracticeSession({
     );
   }
 
-  function choose(key: OptionKey) {
-    setChosen(key);
-    if (variant === "lernen") check(key);
-  }
-
-  function check(key: OptionKey | null = chosen) {
-    if (key === null) return;
-    setRevealed(true);
-    const verdict = isCorrect(question, key);
-    if (verdict === null) {
-      setTally((t) => ({ ...t, skipped: t.skipped + 1 }));
-    } else {
-      recordAnswer(question.id, key, verdict);
-      setTally((t) =>
-        verdict
-          ? { ...t, correct: t.correct + 1 }
-          : { ...t, wrong: t.wrong + 1 },
-      );
-    }
-  }
-
   function next() {
     setIndex((i) => i + 1);
-    setChosen(null);
     setRevealed(false);
+  }
+
+  function rate(recall: Recall) {
+    recordRecall(question.id, recall);
+    setTally((t) =>
+      recall === "knew" ? { ...t, knew: t.knew + 1 } : { ...t, missed: t.missed + 1 },
+    );
+    next();
   }
 
   return (
@@ -124,29 +107,14 @@ export function PracticeSession({
       <QuestionCard
         key={question.id}
         question={question}
-        chosen={chosen}
-        reveal={reveal}
-        onChoose={choose}
+        revealed={revealed}
+        onReveal={() => setRevealed(true)}
+        onRate={variant === "ueben" ? rate : undefined}
         isFavorite={progress.favorites.includes(question.id)}
         onToggleFavorite={() => toggleFavorite(question.id)}
       />
 
-      {!revealed ? (
-        variant === "ueben" ? (
-          <button
-            type="button"
-            disabled={chosen === null}
-            onClick={() => check()}
-            className="rounded-xl bg-brand px-4 py-3.5 font-semibold text-white disabled:opacity-40"
-          >
-            Antwort prüfen
-          </button>
-        ) : (
-          <p className="text-center text-sm text-ink-muted">
-            Wähle eine Antwort.
-          </p>
-        )
-      ) : (
+      {variant === "lernen" && revealed && (
         <button
           type="button"
           onClick={next}
@@ -167,18 +135,12 @@ function Stat({
 }: {
   label: string;
   value: number;
-  tone: "correct" | "wrong" | "warn";
+  tone: string;
 }) {
-  const colour =
-    tone === "correct"
-      ? "text-correct"
-      : tone === "wrong"
-        ? "text-wrong"
-        : "text-warn";
   return (
     <div className="rounded-xl bg-surface-sunken p-3">
       <dt className="text-xs text-ink-muted">{label}</dt>
-      <dd className={`text-2xl font-bold tabular-nums ${colour}`}>{value}</dd>
+      <dd className={`text-2xl font-bold tabular-nums ${tone}`}>{value}</dd>
     </div>
   );
 }

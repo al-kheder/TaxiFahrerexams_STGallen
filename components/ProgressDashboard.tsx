@@ -5,9 +5,9 @@ import { useState } from "react";
 import { CATEGORIES } from "@/lib/categories";
 import {
   allQuestions,
-  gradableIds,
+  idsOf,
   questionsByCategory,
-  questionsByTestbogen,
+  questionsByPart,
 } from "@/lib/repository";
 import { mistakeIds, statsFor, useProgress, type Stats } from "@/lib/progress";
 
@@ -15,12 +15,12 @@ export function ProgressDashboard() {
   const { progress, reset } = useProgress();
   const [confirmReset, setConfirmReset] = useState(false);
 
-  const overall = statsFor(progress, gradableIds());
+  const overall = statsFor(progress, idsOf(allQuestions()));
   const mistakes = mistakeIds(progress).length;
 
   const byCategory = CATEGORIES.map((category) => ({
     category,
-    stats: statsFor(progress, gradableIds(questionsByCategory(category.id))),
+    stats: statsFor(progress, idsOf(questionsByCategory(category.id))),
   }));
 
   // "Strongest" and "needs work" only mean something once a category has
@@ -43,11 +43,11 @@ export function ProgressDashboard() {
         <dl className="grid grid-cols-2 gap-3">
           <Metric label="Gesamtfragen" value={overall.total} />
           <Metric label="Bearbeitet" value={overall.answered} />
-          <Metric label="Richtig" value={overall.correct} tone="text-correct" />
-          <Metric label="Falsch" value={overall.wrong} tone="text-wrong" />
+          <Metric label="Gewusst" value={overall.correct} tone="text-correct" />
+          <Metric label="Nicht gewusst" value={overall.wrong} tone="text-wrong" />
         </dl>
         <div className="mt-4 border-t border-border pt-4">
-          <p className="text-sm text-ink-muted">Genauigkeit</p>
+          <p className="text-sm text-ink-muted">Selbst als gewusst beurteilt</p>
           <p className="text-3xl font-bold tabular-nums text-ink">
             {overall.answered === 0
               ? "—"
@@ -87,7 +87,7 @@ export function ProgressDashboard() {
               href="/fehler"
               className="rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium text-ink no-underline hover:bg-surface-sunken"
             >
-              🔁 {mistakes} offene {mistakes === 1 ? "Fehlerfrage" : "Fehlerfragen"} üben
+              🔁 {mistakes} {mistakes === 1 ? "Frage" : "Fragen"} zum Wiederholen
             </Link>
           )}
         </section>
@@ -99,12 +99,12 @@ export function ProgressDashboard() {
         ))}
       </Section>
 
-      <Section title="Nach Testbogen">
-        {[1, 2, 3].map((sheet) => (
+      <Section title="Nach Teil">
+        {[1, 2, 3, 4, 5].map((part) => (
           <Row
-            key={sheet}
-            label={`Testbogen ${sheet}`}
-            stats={statsFor(progress, gradableIds(questionsByTestbogen(sheet)))}
+            key={part}
+            label={`Teil ${part}`}
+            stats={statsFor(progress, idsOf(questionsByPart(part)))}
           />
         ))}
       </Section>
