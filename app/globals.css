@@ -2,8 +2,10 @@
 
 /*
   Design tokens. Semantic names rather than raw colours so the correct/incorrect
-  states stay consistent everywhere -- an exam app that renders "richtig" in a
-  slightly different green on two screens teaches the learner to distrust it.
+  states stay consistent everywhere -- a learning app that renders "Gewusst" in
+  a slightly different green on two screens teaches the learner to distrust it.
+
+  The light palette lives here and also generates the Tailwind utilities.
 */
 @theme {
   --color-surface: #ffffff;
@@ -27,25 +29,35 @@
     "Helvetica Neue", Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-surface: #14161a;
-    --color-surface-muted: #1b1e24;
-    --color-surface-sunken: #23272f;
-    --color-border: #2f3540;
-    --color-ink: #f2f4f7;
-    --color-ink-muted: #a3adbb;
+:root {
+  color-scheme: light;
+}
 
-    --color-brand: #7ea6ff;
-    --color-brand-soft: #1a2439;
+/*
+  Dark palette. A small script in the layout resolves the stored preference
+  ("hell" / "dunkel" / "system") before first paint and always writes a concrete
+  data-theme, so the OS preference never needs a second, duplicated media query
+  here -- one definition, no chance of the two drifting apart.
+*/
+:root[data-theme="dark"] {
+  color-scheme: dark;
 
-    --color-correct: #5cd08a;
-    --color-correct-soft: #16281e;
-    --color-wrong: #ff8f85;
-    --color-wrong-soft: #2c1a19;
-    --color-warn: #f0b45e;
-    --color-warn-soft: #2b2113;
-  }
+  --color-surface: #14161a;
+  --color-surface-muted: #1b1e24;
+  --color-surface-sunken: #23272f;
+  --color-border: #2f3540;
+  --color-ink: #f2f4f7;
+  --color-ink-muted: #a3adbb;
+
+  --color-brand: #7ea6ff;
+  --color-brand-soft: #1a2439;
+
+  --color-correct: #5cd08a;
+  --color-correct-soft: #16281e;
+  --color-wrong: #ff8f85;
+  --color-wrong-soft: #2c1a19;
+  --color-warn: #f0b45e;
+  --color-warn-soft: #2b2113;
 }
 
 html {
@@ -57,7 +69,7 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   margin: 0;
-  /* The answer options are large tap targets; keep them from being zoomed. */
+  /* The rating buttons are large tap targets; keep them from being zoomed. */
   touch-action: manipulation;
 }
 

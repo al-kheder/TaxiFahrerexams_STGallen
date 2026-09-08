@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { THEME_BOOTSTRAP, ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1d4ed8",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#14161a" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
@@ -20,7 +24,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="de">
+    // suppressHydrationWarning: the bootstrap script sets data-theme on <html>
+    // before React hydrates, so the attribute legitimately differs from the
+    // server-rendered markup.
+    <html lang="de" suppressHydrationWarning>
+      <head>
+        {/* Runs before first paint so the page never flashes the wrong theme. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
+      </head>
       <body>
         <a
           href="#inhalt"
@@ -29,13 +40,14 @@ export default function RootLayout({
           Zum Inhalt springen
         </a>
         <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col">
-          <header className="border-b border-border bg-surface px-4 py-3">
+          <header className="flex items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3">
             <Link href="/" className="flex items-baseline gap-2 no-underline">
               <span className="text-base font-semibold text-ink">ARV 2</span>
-              <span className="text-sm text-ink-muted">
+              <span className="hidden text-sm text-ink-muted sm:inline">
                 Taxiprüfung St. Gallen
               </span>
             </Link>
+            <ThemeToggle />
           </header>
           <main id="inhalt" className="flex-1 px-4 py-5">
             {children}
